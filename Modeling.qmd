@@ -2,5 +2,82 @@
 title: "Modeling"
 format: html
 editor: visual
---
+---
+
+## Introduction
+
+This file will explore the fitting of different models for the dataset. Initially, the data will be split into a train/test/split. From there, we'll go through a process of fitting a logistic regression model, a classification tree, and a random forest on the training data. The best model will be selected based on metrics produced from comparing the data on the test set. The goal is to develop the best predictive model that will identify individuals at risk of diabetes. 
+
+## Data Splitting
+
+We will first split the data into a training and a test set. This is done in order to ensure that our model is able to capture the patterns well of unseen data. 
+
+```{r}
+library(tidyverse)
+library(caret)
+
+set.seed(123)
+
+split_index <- createDataPartition(diabetes_data$Diabetes_binary, p = 0.7, list = FALSE)
+train_data <- diabetes_data[split_index, ]
+test_data <- diabetes_data[-split_index, ]
+```
+
+I'm going to set up my cross validation object here to avoid any repetetiveness 
+
+```{r}
+cv_control <- trainControl(method = "cv", number = 5, classProbs = TRUE, summaryFunction = mnLogLoss)
+```
+
+
+## Logistic Regression Models: This models the probability of a binary outcome (such as diabetes) using log-odds of the response. Usually, we use it to model a classification task such as the chance of success or failure. 
+
+### Model 1: BMI Only
+
+```{r}
+model_bmi <- train(Diabetes_binary ~ BMI, data = train_data, method = "glm", family = "binomial", trControl = cv_control, metric = "logLoss")
+```
+
+### Model 2: Adding physical activity to the model 
+
+```{r}
+model_phys <- train(Diabetes_binary ~ BMI + PhysActivity, data = train_data, method = "glm", family = "binomial", trControl = cv_control, metric = "logLoss")
+```
+
+### Model 3: Adding HighBP to the last model
+
+```{r}
+model_bp <- train(Diabetes_binary ~ BMI + PhysActivity + HighBP, data = train_data, method = "glm", family = "binomial", trControl = cv_control, metric = "logLoss")
+```
+
+### Selecting the best model based on the results
+
+```{r}
+model_bmi$results
+model_phys$results
+model_bp$results
+```
+
+The model with the lowest logLoss is the one that includes all three predictors.  
+
+## Classificaton Tree: This splits the data into subsets based on the predictor values to provide us with outcomes/responses. They split up the predictor space into regions and then on each region, we fit a different prediction. The reason we fit these models is because they're easy to interpret  
+
+### Fitting and tuning the model
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

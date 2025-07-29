@@ -84,6 +84,8 @@ ggplot(diabetes_data, aes(x = HighBP, fill = Diabetes_binary)) + geom_bar(positi
 ```
 
 
+[Click here for the Modeling Page](Modeling.html)
+
 
 
 
