@@ -1,0 +1,61 @@
+---
+title: "EDA"
+format: html
+editor: visual
+---
+
+##Introduction
+
+This project explores data from the Diabetes Health Indicators Dataset, based on the BRFSS 2015 survey. The dataset contains self-reported health and lifestyle information from over 250,000 adults in the US. The goal is to create a model for identifying individuals with diabetes using various predictors.
+
+In this exploratory data analysis, we're going to examine 3  variables that could be associated with diabetes status: BMI (Body Mass Index), Physical Activity, and High Blood Pressure (HighBP). I chose these variables because based on a lot of prior research and general knowledge, these variables tend to be strong predictors of diabetes risk. This EDA will help inform which variables may be useful for future modeling. The ultimate goal is to predict the existence of diabetes in an individual based on the variables present in the dataset. 
+
+
+## Setting all my libraries
+
+```{r}
+library(readr)
+library(tidyverse)
+```
+
+
+
+## Data: I'm only converting the three variables into factors that I'm going to be working with because adding other variables requires more computational power that makes the model run for longer. I'm also looking at a glimpse of the dataset and checking if there are any NA values
+
+```{r}
+diabetes <- read_csv("diabetes_012_health_indicators_BRFSS2015.csv")
+
+glimpse(diabetes_data)
+
+colSums(is.na(diabetes_data))
+```
+
+```{r}
+diabetes_data <- diabetes |>
+  mutate(
+    Diabetes_binary = factor(Diabetes_012, labels = c("No Diabetes", "Prediabetes", "Diabetes")),
+    PhysActivity = factor(PhysActivity, labels = c("No", "Yes")),
+    HighBP = factor(HighBP, labels = c("No", "Yes"))
+  )
+```
+
+##Summarizations
+
+### Univariate Summary for BMI: We see that BMI is right-skewed with the median being 27. The mean is slightly higher than the median which explains the right skewed distribution. For the model, I'm assuming or anticipating that a higher BMI will results in a greater risk of diabetes.
+
+```{r}
+summary(diabetes_data$BMI)
+
+ggplot(diabetes_data, aes(x = BMI)) + geom_histogram(binwidth = 2, fill = "blue", color = "gray") + labs(title = "BMI Distribution", x = "BMI", y = "Count")
+```
+
+### Univariate Summary: Physical Activity
+
+```{r}
+
+```
+
+
+
+
+
