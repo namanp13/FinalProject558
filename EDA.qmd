@@ -49,11 +49,42 @@ summary(diabetes_data$BMI)
 ggplot(diabetes_data, aes(x = BMI)) + geom_histogram(binwidth = 2, fill = "blue", color = "gray") + labs(title = "BMI Distribution", x = "BMI", y = "Count")
 ```
 
-### Univariate Summary: Physical Activity
+### Univariate Summary: Physical Activity. As we can see, majority of the people do participate in physical activity. Howerver, there is still a good number of people that don't partake in physical activity. I'm anticipating that the people who don't partake will show a higher risk of diabetes in the modeling stage. 
 
 ```{r}
-
+ggplot(diabetes_data, aes(x = PhysActivity)) + geom_bar(fill = "green") + labs(title = "Physical Activity", x = "Active or Not", y = "Count")
 ```
+
+
+### Univariate Summary: High Blood Pressure. We can see that there is a substanial number of peoople reporting a high blood pressure even though the No column has more. A higher blood pressure results in a higher risk of diabetes as well. 
+
+```{r}
+ggplot(diabetes_data, aes(x = HighBP)) + geom_bar(fill = "red") + labs(title = "High Blood Pressure", x = "High BP or Not?", y = "Count")
+```
+
+
+### Bivariate Relationship with Diabetes. These three plots now explore the bivariate relationship with diabetes.
+
+In the first plot, we can see that there is a slightly higher BMI associated with people who do have diabetes. People with no diabetes tend to have the lowest BMI. 
+
+```{r}
+ggplot(diabetes_data, aes(x = Diabetes_binary, y = BMI, fill = Diabetes_binary)) + geom_boxplot() + labs(title = "BMI by Diabetes", x = "Diabetes", y = "BMI")
+```
+
+In this second plot, we can clearly see that that individuals that don't partake in physical activity tend to have more cases of diabetes. Even though there are still people who do physical activity and have diabetes, the proportion of the latter is much higher. 
+
+```{r}
+ggplot(diabetes_data, aes(x = PhysActivity, fill = Diabetes_binary)) +geom_bar(position = "fill") +labs(title = "Diabetes Physical Activity", y = "Proportion") 
+```
+
+In the last plot, we can see the highest correlation thus far of the three plots. A higher BP tends to lead to higher number of diabetics. This isn't a surprise based on past research and general knowledge. 
+
+```{r}
+ggplot(diabetes_data, aes(x = HighBP, fill = Diabetes_binary)) + geom_bar(position = "fill") + labs(title = "Diabetes by High BP", y = "Proportion")
+```
+
+
+
 
 
 
