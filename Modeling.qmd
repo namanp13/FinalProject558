@@ -58,18 +58,71 @@ model_phys$results
 model_bp$results
 ```
 
-The model with the lowest logLoss is the one that includes all three predictors.  
+The model with the lowest logLoss is the one that includes all three predictors (model_bp) 
 
 ## Classificaton Tree: This splits the data into subsets based on the predictor values to provide us with outcomes/responses. They split up the predictor space into regions and then on each region, we fit a different prediction. The reason we fit these models is because they're easy to interpret  
 
 ### Fitting and tuning the model
 
+```{r}
+grid_tree <- expand.grid(cp = seq(0.001, 0.05, by = 0.005))
+
+model_tree <- train(Diabetes_binary ~ BMI + PhysActivity + HighBP, data = train_data, method = "rpart", trControl = cv_control, tuneGrid = grid_tree, metric = "logLoss")
+```
+
+### Picking the best model based on the tuning
+
+```{r}
+model_tree$bestTune
+```
+
+Best cp is 0.046.
 
 
+## Random Forest Model: This is an ensemble model. In this model, we use bootstrap resamples to create multiple trees and do predictions on each tree. We then average our results in some way for a final prediction. The only difference between this and bagging is that we use a random subset of predictors each time when we split. This is done because there might be a predictor that gets used a lot because it does a good job of predicting so in order to avoid that, we use a random subset at each split. This will make our predictions stronger as compared to a classification tree. 
 
+### Fitting and tuning (i'm going to reduce the number of trees deliberately to reduce running time)
 
+```{r}
+set.seed(123)
 
+grid_random_forest <- expand.grid(mtry = c(1, 2, 3))
 
+random_forest_model <- train(
+  Diabetes_binary ~ BMI + PhysActivity + HighBP,
+  data = train_data,
+  method = "rf",
+  trControl = cv_control,
+  tuneGrid = grid_random_forest,
+  metric = "logLoss",
+  ntree = 100
+)
+```
+
+### Picking the best model based on the tuning
+
+```{r}
+random_forest_model$bestTune
+```
+
+### Now that we have our best 3 models, we're going to compare all of them on the test set based on log-loss. I'm using if-else logic here to look at log and 1-log. 
+
+```{r}
+log_pred <- predict(model_bp, newdata = test_data, type = "prob")[, "Yes"]
+log_loss_logit <- -mean(ifelse(test_data$Diabetes_binary == "Yes", log(log_pred), log(1 - log_pred)))
+
+tree_pred <- predict(model_tree, newdata = test_data, type = "prob")[, "Yes"]
+log_loss_tree <- -mean(ifelse(test_data$Diabetes_binary == "Yes", log(tree_pred), log(1 - tree_pred)))
+
+random_forest_pred <- predict(random_forest_model, newdata = test_data, type = "prob")[, "Yes"]
+log_loss_random_forest <- -mean(ifelse(test_data$Diabetes_binary == "Yes", log(random_forest_pred), log(1 - random_forest_pred)))
+
+print(log_loss_logit)
+print(log_loss_tree)
+print(log_loss_random_forest)
+```
+
+After calculating the log loss on the test set, the logistic regression model had the best log loss and will be used as the final model. 
 
 
 
